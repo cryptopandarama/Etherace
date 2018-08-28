@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>etherace</title>
+  <meta name="description" content="virtual racing on blockchain">
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="stylesheet" href="css/custom.css">
+  <!-- Scripts
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <script src="js/jquery-3.2.1.js"></script>
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" href="images/favicon.ico">
+</head>
+<body style="height: 100%">
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div id="particles-js"></div>
+  <div class="container" style="max-width: 1200px">
+    <nav>
+      <a href="index.html">etherace</a>  &nbsp
+      <a href="faq.html">FAQ</a>  &nbsp
+      <a href="https://ropsten.etherscan.io/address/0x04211e649ff7082cfa7cafb123c95c85fc490121" target="_blank">Contract</a> &nbsp
+      <a href="https://discord.gg" target="_blank">Discord</a> &nbsp
+    </nav>
+    <section class="header">
+      <h2 class="title">etherace</h2>
+      <h4><em>Join a team. Win the pot.</em></h4>
+      <h4>Pot: <span class="title" id="pot">loading</span> 
+      <!--
+      <br>Time left: <span class="title" id="roundEndTime">_timer</span></h4>
+      -->
+      <br>Contract unlocks in: <span class="title" id="roundStartTime">loading</span></h4>
+      <div class="value-props row">
+        <div class="four columns value-prop">
+          <img class="value-img" src="images/blue.svg">
+            <span>Team 0x01234567</span>
+            <br>
+            <span>Volume: </span><span id="teamOneVolume">loading</span>
+            <br>
+            <span>User Stake: </span><span id="teamOneStake">loading</span>
+            <br>
+            <span>User Shares: </span><span id="userTeamOneShares">loading</span>
+            <br>
+            <span>Share Price: </span><span id="teamOneSharePrice">loading</span>
+            <br>
+            <br>
+            <form id="teamOneForm">
+                <input id="teamOneValue" class="u-pull-left" type="text" placeholder="Enter ETH value"/>
+                <button type="submit" form="teamOneForm" value="Submit">Buy Team 1</button>
+            </form>
+            <br>
+            <br>
+            <span>In order to buy into this team, your address must start with 0x0, 1, 2, 3, 4, 5, 6 or 7.</span>
+        </div>
+        <div class="four columns value-prop">
+          <img class="value-img" src="images/red.svg">
+            <span>Team 0x89abcdef</span>
+            <br>
+            <span>Volume: </span><span id="teamTwoVolume">loading</span>
+            <br>
+            <span>User Stake: </span><span id="teamTwoStake">loading</span>
+            <br>
+            <span>User Shares: </span><span id="userTeamTwoShares">loading</span>
+            <br>
+            <span>Share Price: </span><span id="teamTwoSharePrice">loading</span>
+            <br>
+            <br>
+            <form id="teamTwoForm">
+                <input id="teamTwoValue"  class="u-pull-left" type="text" placeholder="Enter ETH value"/>
+                <button align="right" type="submit" form="teamTwoForm" value="Submit">Buy Team 2</button>
+            </form>
+            <br>
+            <br>
+            <span>In order to buy into this team, your address must start with 0x8, 9, a, b, c, d, e or f.</span>
+        </div>
+        <div class="four columns value-prop">
+          <img class="value-img" src="images/watch.svg">
+            <span>Winning Team: </span><span id="currentWinner">loading</span>
+            <br>
+            <span id="address">Please connect to MetaMask</span>
+            <br>
+            <span>All Time Divs: </span><span id="totalDivs">loading</span>
+            <br>
+            <span>Available Divs: </span><span id="userBalance">loading</span>
+            <br>
+            <a id="userWithdraw"><strong>Withdraw</strong></a> 
+            <br>
+            <br>
+            <form id="reduceTimeForm">
+                <input id="reduceTimeValue" class="u-pull-left" type="text" placeholder="Enter ETH value"/>
+                <button align="right" type="submit" form="reduceTimeForm" value="Submit">Reduce Time</button>
+            </form>
+            <br>
+            <br>
+            <span>Lower the clock at a rate of 1 second/finney. You cannot go lower than 5 minutes.</span>
+        </div>
+      </div> 
+    </section>
+  </div>
+  <script>
+    $(window).on('load', function() {
+    var contractAbi = [{"constant":true,"inputs":[],"name":"currentRoundInfo","outputs":[{"name":"_pot","type":"uint256"},{"name":"_teamOneVolume","type":"uint256"},{"name":"_teamTwoVolume","type":"uint256"},{"name":"_teamOnePlayerCount","type":"uint256"},{"name":"_teamTwoPlayerCount","type":"uint256"},{"name":"_totalPlayerCount","type":"uint256"},{"name":"_timerStart","type":"uint256"},{"name":"_timerMax","type":"uint256"},{"name":"_roundStartTime","type":"uint256"},{"name":"_roundEndTime","type":"uint256"},{"name":"_timeLeft","type":"uint256"},{"name":"_currentWinner","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_timerStart","type":"uint256"},{"name":"_timerMax","type":"uint256"}],"name":"openRound","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"teamTwoShares","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"devFeeRate","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"teamOneMembers","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"roundOpen","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"addressThreshold","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"teamTwoDivsTotal","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"teamTwoSharePrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"pot","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"userTeamOneShares","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"teamOneDivsTotal","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"isTeamOneMember","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"teamOneSharePrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"roundSetUp","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"teamOneId","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_user","type":"address"}],"name":"calcUserDivsTotal","outputs":[{"name":"_divs","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"teamOneDivsUnclaimed","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"teamOnePrefix","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"zeroOut","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"resolveRound","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"teamOneTotalPlayers","outputs":[{"name":"_teamOnePlayerCount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"adjustedPotBalance","outputs":[{"name":"_adjustedPotBalance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"userTeamTwoStake","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"teamOneVolume","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"userTeamTwoShares","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"contractBalance","outputs":[{"name":"_contractBalance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"teamTwoDivsUnclaimed","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"userTeamOneStake","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"fundPot","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"precisionFactor","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"teamTwoVolume","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"userWithdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"buy","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"teamTwoId","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"currentWinner","outputs":[{"name":"_winner","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"isTeamTwoMember","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"devWithdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"teamTwoPrefix","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"divRate","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"roundResolved","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getTimeLeft","outputs":[{"name":"_timeLeftSeconds","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"devBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"currentTime","outputs":[{"name":"_time","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"teamOneShares","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"timerMax","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"roundStartTime","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"timerStart","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"roundEndTime","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"teamTwoMembers","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"reduceTime","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"totalPlayers","outputs":[{"name":"_totalPlayerCount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_user","type":"address"}],"name":"calcUserDivsAvailable","outputs":[{"name":"_divs","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"teamTwoTotalPlayers","outputs":[{"name":"_teamTwoPlayerCount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_funder","type":"address"},{"indexed":false,"name":"_amount","type":"uint256"},{"indexed":false,"name":"_message","type":"string"}],"name":"potFunded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_buyer","type":"address"},{"indexed":false,"name":"_amount","type":"uint256"},{"indexed":false,"name":"_teamID","type":"uint256"},{"indexed":false,"name":"_message","type":"string"}],"name":"teamBuy","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_winningTeamId","type":"uint256"},{"indexed":false,"name":"_winningTeamString","type":"string"},{"indexed":false,"name":"_pot","type":"uint256"},{"indexed":false,"name":"_message","type":"string"}],"name":"roundEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_timeStart","type":"uint256"},{"indexed":false,"name":"_timeMax","type":"uint256"},{"indexed":false,"name":"_seed","type":"uint256"},{"indexed":false,"name":"_message","type":"string"}],"name":"newRoundStarted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_user","type":"address"},{"indexed":false,"name":"_teamID","type":"uint256"},{"indexed":false,"name":"_teamAmount","type":"uint256"},{"indexed":false,"name":"_message","type":"string"}],"name":"userWithdrew","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_owner","type":"address"},{"indexed":false,"name":"_amount","type":"uint256"},{"indexed":false,"name":"_message","type":"string"}],"name":"devWithdrew","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_owner","type":"address"},{"indexed":false,"name":"_amount","type":"uint256"},{"indexed":false,"name":"_message","type":"string"}],"name":"contractClosed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_owner","type":"address"}],"name":"contractLaunched","type":"event"}];
+    // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+    if (typeof web3 !== 'undefined') {
+        // Use Mist/MetaMask's provider
+        $('#content').text('Yes web3!');
+        window.web3 = new Web3(web3.currentProvider);
+        var accountInterval = setInterval(function() {
+            account = web3.eth.accounts[0];
+            $('#address').text(account);
+        }, 500);
+    } else {
+        var errorMsg = 'No web3!';
+        $('#content').text(errorMsg);
+        console.log(errorMsg);
+        window.web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/v3/noapikey"));
+        return;
+    }
+    var contractAddress = "0x04211E649fF7082CfA7CAFb123c95C85fc490121";
+    var contractInstance = web3.eth.contract(contractAbi).at(contractAddress);
+    //getters
+    var accountInterval = setInterval(function() {
+    //pot balance
+    contractInstance.pot(function(error, pot) {
+        if (error) {
+            var errorMsg = 'loading';
+            $('#pot').text(errorMsg);
+            console.log(errorMsg);
+            return;   
+        }
+            var potFormated = web3.fromWei(pot, 'ether');
+        $('#pot').text(parseFloat(Math.round(potFormated * 100) / 100).toFixed(2) + " ETH");
+    });
+    contractInstance.teamOneVolume(function(error, teamOneVolume) {
+        if (error) {
+            var errorMsg = 'loading';
+            $('#teamOneVolume').text(errorMsg);
+            console.log(errorMsg);
+            return;
+        }
+            var teamOneVolumeFormated = web3.fromWei(teamOneVolume, 'ether');
+        $('#teamOneVolume').text(parseFloat(Math.round(teamOneVolumeFormated * 100) / 100).toFixed(2) + " ETH");
+    });
+    contractInstance.teamTwoVolume(function(error, teamTwoVolume) {
+        if (error) {
+            var errorMsg = 'loading';
+            $('#teamTwoVolume').text(errorMsg);
+            console.log(errorMsg);
+            return;
+        }
+            var teamTwoVolumeFormated = web3.fromWei(teamTwoVolume, 'ether');
+        $('#teamTwoVolume').text(parseFloat(Math.round(teamTwoVolumeFormated * 100) / 100).toFixed(2) + " ETH");
+    });
+    contractInstance.currentWinner(function(error, currentWinner) {
+        if (error) {
+            var errorMsg = 'loading';
+            $('#currentWinner').text(errorMsg);
+            console.log(errorMsg);
+            return;
+        }
+        $('#currentWinner').text(currentWinner);
+    });
+    //switch to this after launch
+    contractInstance.roundEndTime(function(error, roundEndTime) {
+        if (error) {    
+            var errorMsg = 'loading';
+            $('#roundEndTime').text(errorMsg);
+            console.log(errorMsg);
+            return;
+        }
+            var seconds = roundEndTime - moment().unix();
+            if (seconds < 0) {
+              seconds = 0;
+            }
+            var dateFormatted = moment.duration(seconds, "seconds").format("d[d] hh:mm:ss");
+            $('#roundEndTime').text(dateFormatted);
+        });
+    //for counting down to game launch
+    contractInstance.roundStartTime(function(error, roundStartTime) {
+        if (error) {    
+            var errorMsg = 'loading';
+            $('#roundStartTime').text(errorMsg);
+            console.log(errorMsg);
+            return;
+        }
+            var seconds = roundStartTime - moment().unix();
+            if (seconds < 0) {
+              seconds = 0;
+            }
+            var dateFormatted = moment.duration(seconds, "seconds").format("d[d] hh:mm:ss");
+            $('#roundStartTime').text(dateFormatted);
+        });
+    contractInstance.currentWinner(function(error, currentWinner) {
+        if (error) {
+            var errorMsg = 'loading';
+            $('#currentWinner').text(errorMsg);
+            console.log(errorMsg);
+            return;
+        }
+        $('#currentWinner').text(currentWinner);
+    });
+	  contractInstance.userTeamOneStake(account, function(error, userTeamOneStake) {
+        if (error) {    
+            var errorMsg = 'loading';
+            $('#teamOneStake').text(errorMsg);
+            console.log(errorMsg);
+            return;
+        }        
+            var total = userTeamOneStake;
+            var totalFormated = web3.fromWei(total, 'ether');
+            $('#teamOneStake').text(totalFormated + ' ETH');;
+    });
+    contractInstance.userTeamTwoStake(account, function(error, userTeamTwoStake) {
+        if (error) {    
+            var errorMsg = 'loading';
+            $('#teamTwoStake').text(errorMsg);
+            console.log(errorMsg);
+            return;
+        }        
+            var total = userTeamTwoStake;
+            var totalFormated = web3.fromWei(total, 'ether');
+            $('#teamTwoStake').text(totalFormated + ' ETH');;
+    });
+    contractInstance.calcUserDivsTotal(account, function(error, calcUserDivsTotal) {
+        if (error) {    
+            var errorMsg = 'loading';
+            $('#userBalance').text(errorMsg);
+            console.log(errorMsg);
+            return;
+        }        
+            var total = calcUserDivsTotal;
+            var totalFormated = web3.fromWei(total, 'ether');
+            $('#totalDivs').text(totalFormated + ' ETH');;
+    });
+    contractInstance.calcUserDivsAvailable(account, function(error, calcUserDivsAvailable) {
+        if (error) {    
+            var errorMsg = 'loading';
+            $('#userBalance').text(errorMsg);
+            console.log(errorMsg);
+            return;
+        }        
+            var total = calcUserDivsAvailable;
+            var totalFormated = web3.fromWei(total, 'ether');
+            $('#userBalance').text(totalFormated + ' ETH');;
+    });
+    contractInstance.teamOneSharePrice(function(error, teamOneSharePrice) {
+        if (error) {
+            var errorMsg = 'loading';
+            $('#teamOneSharePrice').text(errorMsg);
+            console.log(errorMsg);
+            return;
+        }
+        var sharePriceFormated = web3.fromWei(teamOneSharePrice, 'finney');
+        $('#teamOneSharePrice').text(parseFloat(Math.round(sharePriceFormated * 100) / 100).toFixed(2) + " finney");
+    });
+    contractInstance.teamTwoSharePrice(function(error, teamTwoSharePrice) {
+        if (error) {
+            var errorMsg = 'loading';
+            $('#teamTwoSharePrice').text(errorMsg);
+            console.log(errorMsg);
+            return;
+        }
+        var sharePriceFormated = web3.fromWei(teamTwoSharePrice, 'finney');
+        $('#teamTwoSharePrice').text(parseFloat(Math.round(sharePriceFormated * 100) / 100).toFixed(2) + " finney");
+    });
+    contractInstance.userTeamOneShares(account, function(error, userTeamOneShares) {
+        if (error) {
+            var errorMsg = 'loading';
+            $('#userTeamOneShares').text(errorMsg);
+            console.log(errorMsg);
+            return;
+        }
+        $('#userTeamOneShares').text(userTeamOneShares);
+    });
+    contractInstance.userTeamTwoShares(account, function(error, userTeamTwoShares) {
+        if (error) {
+            var errorMsg = 'loading';
+            $('#userTeamOneShares').text(errorMsg);
+            console.log(errorMsg);
+            return;
+        }
+        $('#userTeamTwoShares').text(userTeamTwoShares);
+    });
+    }, 1000);
+    //setters
+    $('#userWithdraw').on('click', function() {
+        contractInstance.userWithdraw({from: web3.eth.accounts[0]}, function(error, txHash) { //, 
+            if (error) {
+                var errorMsg = error;
+                console.log(errorMsg);
+                return;
+            }
+        });
+    });
+    $('#teamOneForm').on('submit', function(e) {
+        e.preventDefault(); // cancel the actual submit
+        var val = $('#teamOneValue').val(); 
+        contractInstance.buy({from: web3.eth.accounts[0], gas: 200000, value: web3.toWei(val, "ether")}, function(error, txHash) {
+            if (error) {
+                var errorMsg = error;
+                console.log(errorMsg);
+                return;
+            }
+        });
+        var form = document.getElementById("teamOneForm");
+        form.reset();
+    });
+    $('#teamTwoForm').on('submit', function(e) {
+        e.preventDefault(); // cancel the actual submit
+        var val = $('#teamTwoValue').val(); 
+        contractInstance.buy({from: web3.eth.accounts[0], gas: 200000, value: web3.toWei(val, "ether")}, function(error, txHash) {
+            if (error) {
+                var errorMsg = error;
+                console.log(errorMsg);
+                return;
+            }
+        });
+        var form = document.getElementById("teamTwoForm");
+        form.reset();
+    });
+    $('#fundPotForm').on('submit', function(e) {
+        e.preventDefault(); // cancel the actual submit
+        var val = $('#fundPotValue').val(); 
+        contractInstance.fundPot({from: web3.eth.accounts[0], value: web3.toWei(val, "ether")}, function(error, txHash) {
+            if (error) {
+                var errorMsg = error;
+                console.log(errorMsg);
+                return;
+            }
+        });
+        var form = document.getElementById("fundPotValue");
+        form.reset();
+    });
+    $('#reduceTimeForm').on('submit', function(e) {
+        e.preventDefault(); // cancel the actual submit
+        var val = $('#reduceTimeValue').val(); 
+        contractInstance.reduceTime({from: web3.eth.accounts[0], value: web3.toWei(val, "ether")}, function(error, txHash) {
+            if (error) {
+                var errorMsg = error;
+                console.log(errorMsg);
+                return;
+            }
+        });
+        var form = document.getElementById("reduceTimeForm");
+        form.reset();
+    });
+    //change color of background based on winning team
+    changeColor();
+    function changeColor(){
+      var lastWinner;
+      var colorInterval = setInterval(function() {
+          var winner = getWinner();
+          var team1 = "Team 0x1234567";
+          var team2 = "Team 0x89abcdef";
+          var tie = "a tie? wtf";
+          if (lastWinner !== winner) {
+            // console.log("lastWinner: " + lastWinner);
+            // console.log("winner: " + winner);
+            lastWinner = winner;
+            if (winner == team1) {
+              $('script[src="js/appRed.js"]').remove();
+              $('<script>').attr('src', "js/appBlue.js").appendTo('body');
+              //console.log(getWinner());
+            } else if (winner == team2) {
+              $('script[src="js/appBlue.js"]').remove();
+              $('<script>').attr('src', "js/appRed.js").appendTo('body');
+              //console.log(getWinner());
+            } else {
+              //console.log(getWinner());
+              return;
+            }
+          }
+          }, 2000);
+    }
+    function getWinner() {
+        var winner = document.getElementById("currentWinner").textContent;
+        return winner;
+    }
+    });
+    //var moment = require("moment");
+    //var momentDurationFormatSetup = require("moment-duration-format");
+    //window.momentDurationFormatSetup(moment);
+		</script>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/moment.js"></script>
+		<script src="js/moment-duration-format.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/appBlue.js"></script>
+  	</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>etherace</title>
+  <meta name="description" content="virtual racing on blockchain">
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="stylesheet" href="css/custom.css">
+  <!-- Scripts
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <script src="js/jquery-3.2.1.js"></script>
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" href="images/favicon.ico">
+</head>
+<body style="height: 100%">
+  <div id="particles-js"></div>
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div class="container" style="max-width:1200px">
+   <nav>
+      <a href="index.html">etherace</a>  &nbsp
+      <a href="faq.html">FAQ</a>  &nbsp
+      <a href="https://ropsten.etherscan.io/address/0x04211e649ff7082cfa7cafb123c95c85fc490121" target="_blank">Contract</a> &nbsp
+      <a href="https://discord.gg" target="_blank">Discord</a> &nbsp
+    </nav>
+ <div class="container">
+    <section class="header">
+      <h2 class="title">etherace</h2>
+      <h4><em>Join a team. Win the pot.</em></h4>
+      <div class="docs-section" id="intro">
+      <h6 class="docs-header">About</h6>
+          <p>etherace is a brand new team-based countdown lottery game. Users are grouped into teams based on the first byte of their address. Team One: 0x0..., 0x1..., 0x2..., 0x3..., 0x4..., 0x5..., 0x6..., 0x7. Team Two: 0x8..., 0x9..., 0xa..., 0xb..., 0xc..., 0xd..., 0xe..., 0xf.</p>
+      <h6 class="docs-header">Disclaimer</h6>
+          <p>play well</p>
+      <h6 class="docs-header">Getting Started</h6>
+          <p>In order to play etherace, you need a web3 capable browser to connect to the Ethereum blockchain. We recommend <a href="https://metamask.io/" target="_blank">MetaMask</a> for desktop and <a href="https://trustwalletapp.com/" target="_blank">TrustWallet</a> for mobile. The game is played with Ether. You can acquire some from reputable exchanges like <a href="https://www.coinbase.com/" target="_blank">Coinbase</a> or <a href="https://shapeshift.io/" target="_blank">Shapeshift</a>. Advanced users can directly interact with the smart contract via <a href="https://remix.ethereum.org/" target="_blank">Remix</a>, <a href="https://mycrypto.com/" target="_blank">MyCrypto</a>, or <a href="https://etherscan.io/" target="_blank">Etherscan</a>.</p>
+      <h6 class="docs-header">Rules</h6>
+          <ul>
+            <li>The team with the highest buy volume when the clock expires wins the pot.</li>
+            <li>The pot is divided among the winning team members, proportional to a weighted share of team volume.</li>
+            <li>Each team has a different share price that starts at 1 share = 1 finney. Share price increase linearly at a rate of 0.02 finney per ETH of buy volume.</li>
+            <li>Every new buy adds time to the clock at the rate of 1 second/finney. The timer is capped at 24h.</li>
+            <li>You can also reduce the clock at the rate of 1 second/finney, but this does not count towards your share. The timer can't go below 5 minutes with this method.</li>
+            <li>Referrals and dividends are distributed by team. 50% of each new buy is proportionally split between that team's members.</li>
+            <li>New seeded rounds with new teams will begin on a semi-regular basis based on user interest. Each game will use a new contract.</li>
+            <li>In the unlikely event of a tie, the pot is distributed proportionally as weighted shares of total volume.</li>
+            <li>There is no maximum buy, but large buys receive proportionally fewer shares. For example: at the beginning of the game, one 100 ETH buy would receive 33,333 shares, whereas one hundred 1 ETH buys would receive 55,265 shares.</li>
+            <li>No contracts allowed.</li>
+            <li>Users can withdraw earned dividends from referrals or pot wins at any time. Shares cannot be sold.</li>
+            <li>The round will automatically open based on a preset timer.</li>
+            <li>The contract will be closed no sooner than 100 days after the round ends. Any unclaimed user funds left past this time may be lost.</li>
+          </ul>
+        <h6 class="docs-header">Strategy</h6>
+          <ul>
+            <li>This game is designed to support multiple modes of play.</li>
+            <li>Get in early and promote your team to collect divs.</li>
+            <li>Manage risk by playing both sides of the fence.</li>
+            <li>Flex your whale wallet by front running and reducing the timer.</li>
+            <li>Piggy back on big players by making sure you're on the same team.</li>
+            <li>Gain a larger share of divs by supporting the underdog.</li>
+            <li>Buy smaller amounts to maximize your share count.</li>
+          </ul>
+      </div>
+    </section>
+    </div>
+    </div>
+    <script src="js/particles.js"></script>
+    <script src="js/appBlue.js"></script>
+	</body>
+</html>
